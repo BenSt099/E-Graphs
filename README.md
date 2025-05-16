@@ -1,6 +1,6 @@
-# Bachelorarbeit - EGraphs <a href="https://github.com/BenSt099/Bachelorarbeit-EGraphs"><img src="logo.png" align="right" width="112" height="112"/></a>
+# E-Graphs <a href="https://github.com/BenSt099/Bachelorarbeit-EGraphs"><img src="logo.png" align="right" width="112" height="112"/></a>
 
-Das Ziel dieser Bachelorarbeit ist es, eine Anwendung für die Lehre zu entwickeln, die
+Das Ziel dieses Repositories ist es, eine Anwendung für die Lehre zu entwickeln, die
 Studentinnen und Studenten Wissen zu den Themen **E-Graphs** und **Equality Saturation** vermittelt. Dabei sollen sie die Möglichkeit haben, sich sowohl auf theoretischer als
 auch praktischer Ebene mit den Themen auseinander setzen zu können. Die Grundlage der theoretischen Ebene bildet diese Arbeit, in der notwendige Hintergrundkenntnisse
 erarbeitet werden. Außerdem wird ein Einblick in die Implementierung gegeben. Die praktische Ebene besteht aus der Anwendung, mit deren Hilfe Schritt für Schritt aufgezeigt
