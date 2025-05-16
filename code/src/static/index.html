@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- (DISCLAIMER) -->
+    <!-- This project, particularly the UI, uses components and icons from
+    Bootstrap v5.3.3 (LINK: https://getbootstrap.com/) -->
+    <meta charset="UTF-8">
+    <title>E-Graphs</title>
+    <link rel="icon" type="image/x-icon" href="logo.png">
+    <link rel="stylesheet" href="bootstrap-5.3.3-dist/css/bootstrap.min.css">
+    <script src="bootstrap-5.3.3-dist/js/bootstrap.bundle.min.js"></script>
+    <script src="index.js"></script>
+    <script src="d3.v7.js"></script>
+    <script src="graphviz.umd.js"></script>
+    <script src="d3-graphviz.js"></script>
+    <noscript>
+        <div class="alert alert-danger" role="alert">
+            <b>ATTENTION!</b> This application requires JavaScript to run
+            properly. Please enable it. If you have any extensions that block
+            JavaScript enabled, please disable them for this tab.
+        </div>
+    </noscript>
+    <style>
+        svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .svgInButtons {
+            width: 17px;
+            height: 17px;
+        }
+
+        .msgContainer {
+            opacity: 1;
+            animation: fadeIn 1s linear;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0
+            }
+            50% {
+                opacity: 0.5
+            }
+            100% {
+                opacity: 1
+            }
+        }
+    </style>
+</head>
+<body onload="loadData()">
+<!--##########################################################################################################################-->
+<!-- HEADER -->
+<div class="container" style="max-width: 100%">
+    <header class="d-flex flex-wrap align-items-center justify-content-center
+    justify-content-md-between py-3 mb-4 border-bottom">
+        <div class="col-md-3 mb-2 mb-md-0">
+            <img src="logo.png" width="56" height="56" alt="E-Graphs logo">
+        </div>
+        <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
+            <li><a href="#" class="nav-link px-2">Home</a></li>
+            <li><a href="documentation/" target="_blank"
+                   rel="noopener noreferrer"
+                   class="nav-link px-2">Docs</a></li>
+            <li><a href="about.html" target="_blank" rel="noopener noreferrer"
+                   class="nav-link px-2">About</a></li>
+        </ul>
+        <div class="col-md-3 text-end">
+        </div>
+    </header>
+</div>
+<div class="b-example-divider"></div>
+<!-- HEADER -->
+<!--##########################################################################################################################-->
+
+<!--##########################################################################################################################-->
+<!-- MAIN -->
+<div class="container" style="max-width: 100%;">
+    <div class="row">
+        <div class="col-6" style="border-right: 2px solid black">
+            <h2 style="margin-bottom: 17px">EGraph</h2>
+            <a href="egraph.html" target="_blank" rel="noopener noreferrer">Open
+                in new tab</a>
+            <div id="graph" style="text-align: center;height: 100%;"
+                 class="card"></div>
+        </div>
+        <div class="col" style="border-right: 2px solid black" id="gridCol1">
+            <div class="container">
+                <h2 style="margin-bottom: 40px">Rewrite Rules
+                    <button class="btn"
+                            type="button"
+                            style="position: relative; float: right"
+                            onclick="expandOrCollapseGridContainer('1')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                             height="16" fill="currentColor"
+                             class="bi bi-caret-left-square svgInButtons"
+                             viewBox="0 0 16 16">
+                            <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
+                            <path d="M10.205 12.456A.5.5 0 0 0 10.5 12V4a.5.5 0 0 0-.832-.374l-4.5 4a.5.5 0 0 0 0 .748l4.5 4a.5.5 0 0 0 .537.082"/>
+                        </svg>
+                    </button>
+                </h2>
+
+                <div class="accordion" id="accordionPanelsStayOpenExample">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#panelsStayOpen-collapseOnerr"
+                                    aria-expanded="true"
+                                    aria-controls="panelsStayOpen-collapseOnerr">
+                                <b>Create</b>
+                            </button>
+                        </h2>
+                        <div id="panelsStayOpen-collapseOnerr"
+                             class="accordion-collapse collapse show">
+                            <div class="accordion-body">
+                                <div class="input-group mb-3">
+                                    <input type="text" class="form-control"
+                                           placeholder="left term"
+                                           aria-label="left-term"
+                                           aria-describedby="btn_rewrite_rule_create"
+                                           id="rewrite_rule_create_left">
+                                    <input type="text" class="form-control"
+                                           placeholder="right term"
+                                           aria-label="right-term"
+                                           aria-describedby="btn_rewrite_rule_create"
+                                           id="rewrite_rule_create_right">
+                                    <button class="btn btn-success"
+                                            type="button"
+                                            id="btn_rewrite_rule_create"
+                                            onclick="createRewriteRule('','')">
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                             width="16"
+                                             height="16" fill="currentColor"
+                                             class="bi bi-plus-circle svgInButtons"
+                                             viewBox="0 0 16 16">
+                                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                                            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+                                        </svg>
+                                        Create
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed"
+                                    type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#panelsStayOpen-collapseTworr"
+                                    aria-expanded="false"
+                                    aria-controls="panelsStayOpen-collapseTworr">
+                                <b>Rules</b>
+                            </button>
+                        </h2>
+                        <div id="panelsStayOpen-collapseTworr"
+                             class="accordion-collapse collapse">
+                            <div class="accordion-body">
+
+                                <div class="container text-center">
+                                    <div class="row row-cols-2">
+                                        <div class="col">
+                                            <button type="button"
+                                                    class="btn btn-success"
+                                                    onclick="uploadRewriteRules()"
+                                                    style="width: 100%;">
+                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                     width="16" height="16"
+                                                     fill="currentColor"
+                                                     class="bi bi-upload svgInButtons"
+                                                     viewBox="0 0 16 16">
+                                                    <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/>
+                                                    <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708z"/>
+                                                </svg>
+                                                Upload
+                                            </button>
+                                        </div>
+                                        <div class="col">
+                                            <button type="button"
+                                                    class="btn btn-success"
+                                                    onclick="downloadRewriteRules()"
+                                                    style="width: 100%;">
+                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                     width="16" height="16"
+                                                     fill="currentColor"
+                                                     class="bi bi-download svgInButtons"
+                                                     viewBox="0 0 16 16">
+                                                    <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/>
+                                                    <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708z"/>
+                                                </svg>
+                                                Download
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 30px; margin-bottom: 70px"
+                     id="buttonRR">
+                    <button class="btn btn-success"
+                            type="button"
+                            style="position: relative; float: left"
+                            onclick="applyAllRewriteRules()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                             height="16" fill="currentColor"
+                             class="bi bi-recycle svgInButtons" viewBox="0 0 16 16">
+                            <path d="M9.302 1.256a1.5 1.5 0 0 0-2.604 0l-1.704 2.98a.5.5 0 0 0 .869.497l1.703-2.981a.5.5 0 0 1 .868 0l2.54 4.444-1.256-.337a.5.5 0 1 0-.26.966l2.415.647a.5.5 0 0 0 .613-.353l.647-2.415a.5.5 0 1 0-.966-.259l-.333 1.242zM2.973 7.773l-1.255.337a.5.5 0 1 1-.26-.966l2.416-.647a.5.5 0 0 1 .612.353l.647 2.415a.5.5 0 0 1-.966.259l-.333-1.242-2.545 4.454a.5.5 0 0 0 .434.748H5a.5.5 0 0 1 0 1H1.723A1.5 1.5 0 0 1 .421 12.24zm10.89 1.463a.5.5 0 1 0-.868.496l1.716 3.004a.5.5 0 0 1-.434.748h-5.57l.647-.646a.5.5 0 1 0-.708-.707l-1.5 1.5a.5.5 0 0 0 0 .707l1.5 1.5a.5.5 0 1 0 .708-.707l-.647-.647h5.57a1.5 1.5 0 0 0 1.302-2.244z"/>
+                        </svg>
+                        Saturate
+                    </button>
+
+                    <button class="btn btn-success"
+                            type="button"
+                            style="position: relative; float: right"
+                            onclick="applyRewriteRules()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                             height="16" fill="currentColor"
+                             class="bi bi-check2-square svgInButtons"
+                             viewBox="0 0 16 16">
+                            <path d="M3 14.5A1.5 1.5 0 0 1 1.5 13V3A1.5 1.5 0 0 1 3 1.5h8a.5.5 0 0 1 0 1H3a.5.5 0 0 0-.5.5v10a.5.5 0 0 0 .5.5h10a.5.5 0 0 0 .5-.5V8a.5.5 0 0 1 1 0v5a1.5 1.5 0 0 1-1.5 1.5z"/>
+                            <path d="m8.354 10.354 7-7a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0"/>
+                        </svg>
+                        Apply
+                    </button>
+                </div>
+
+                <div class="card" style="max-height: 400px; margin-top: 20px"
+                     id="ruleSection">
+                    <div class="container text-center">
+                        <div class="row">
+                            <div class="col-6">
+                                <b>Rule</b>
+                            </div>
+                            <div class="col">
+                                <b>#</b>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="container text-center" id="rr_table"
+                         style="overflow: scroll">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col" id="gridCol2">
+            <div class="container">
+                <h2 style="margin-bottom: 40px">Control
+                    <button class="btn"
+                            type="button"
+                            style="position: relative; float: right"
+                            onclick="expandOrCollapseGridContainer('2')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                             height="16" fill="currentColor"
+                             class="bi bi-caret-left-square svgInButtons"
+                             viewBox="0 0 16 16">
+                            <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
+                            <path d="M10.205 12.456A.5.5 0 0 0 10.5 12V4a.5.5 0 0 0-.832-.374l-4.5 4a.5.5 0 0 0 0 .748l4.5 4a.5.5 0 0 0 .537.082"/>
+                        </svg>
+                    </button>
+                </h2>
+
+                <div class="accordion" id="accordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#panelsStayOpen-collapseOne"
+                                    aria-expanded="true"
+                                    aria-controls="panelsStayOpen-collapseOne">
+                                <b>Create</b>
+                            </button>
+                        </h2>
+                        <div id="panelsStayOpen-collapseOne"
+                             class="accordion-collapse collapse show">
+                            <div class="accordion-body">
+                                <div class="input-group mb-3">
+                                    <input type="text" class="form-control"
+                                           placeholder="term"
+                                           aria-label="term"
+                                           aria-describedby="btn_control_create"
+                                           id="control_create_input">
+                                    <button class="btn btn-success"
+                                            type="button"
+                                            data-bs-toggle="tooltip"
+                                            title="Create EGraph, e.g. (/ (* a 2) 2)"
+                                            id="btn_control_create"
+                                            onclick="create()">
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                             width="16"
+                                             height="16" fill="currentColor"
+                                             class="bi bi-plus-circle svgInButtons"
+                                             viewBox="0 0 16 16">
+                                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                                            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+                                        </svg>
+                                        Create
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed"
+                                    type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#panelsStayOpen-collapseTwo"
+                                    aria-expanded="false"
+                                    aria-controls="panelsStayOpen-collapseTwo">
+                                <b>Debug</b>
+                            </button>
+                        </h2>
+                        <div id="panelsStayOpen-collapseTwo"
+                             class="accordion-collapse collapse">
+                            <div class="accordion-body">
+
+                                <div class="container text-center">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="form-check">
+                                                <input class="form-check-input"
+                                                       type="radio"
+                                                       name="mode"
+                                                       id="mode_standard"
+                                                       checked>
+                                                <label class="form-check-label"
+                                                       for="mode_standard">
+                                                    <b>Standard</b>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-check">
+                                                <input class="form-check-input"
+                                                       type="radio"
+                                                       name="mode"
+                                                       id="mode_debug">
+                                                <label class="form-check-label"
+                                                       for="mode_debug">
+                                                    <b>Debug</b>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="container"
+                                     style="margin-top: 20px; max-height: 200px; padding-left: 0; padding-right: 0">
+                                    <div class="container"
+                                         style="padding-top: 10px; padding-bottom: 10px; padding-left: 10px">
+                                        <div class="btn-group" role="group"
+                                             aria-label="Button Control Group"
+                                             style="height: 100%; width: 100%">
+                                            <button type="button"
+                                                    class="btn btn-success"
+                                                    style="border: 1px solid white;"
+                                                    id="leftleft_btn"
+                                                    onclick="moveThroughDebugOutput('fastbackward')">
+                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                     width="16" height="16"
+                                                     fill="currentColor"
+                                                     class="bi bi-chevron-double-left svgInButtons"
+                                                     viewBox="0 0 16 16">
+                                                    <path fill-rule="evenodd"
+                                                          d="M8.354 1.646a.5.5 0 0 1 0 .708L2.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/>
+                                                    <path fill-rule="evenodd"
+                                                          d="M12.354 1.646a.5.5 0 0 1 0 .708L6.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/>
+                                                </svg>
+                                            </button>
+                                            <button type="button"
+                                                    class="btn btn-success"
+                                                    style="border: 1px solid white;"
+                                                    id="left_btn"
+                                                    onclick="moveThroughDebugOutput('backward')">
+                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                     width="16" height="16"
+                                                     fill="currentColor"
+                                                     class="bi bi-chevron-left svgInButtons"
+                                                     viewBox="0 0 16 16">
+                                                    <path fill-rule="evenodd"
+                                                          d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/>
+                                                </svg>
+                                            </button>
+                                            <button type="button"
+                                                    class="btn btn-success"
+                                                    style="border: 1px solid white;"
+                                                    id="right_btn"
+                                                    onclick="moveThroughDebugOutput('forward')">
+                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                     width="16" height="16"
+                                                     fill="currentColor"
+                                                     class="bi bi-chevron-right svgInButtons"
+                                                     viewBox="0 0 16 16">
+                                                    <path fill-rule="evenodd"
+                                                          d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708"/>
+                                                </svg>
+                                            </button>
+                                            <button type="button"
+                                                    class="btn btn-success"
+                                                    style="border: 1px solid white;"
+                                                    id="rightright_btn"
+                                                    onclick="moveThroughDebugOutput('fastforward')">
+                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                     width="16" height="16"
+                                                     fill="currentColor"
+                                                     class="bi bi-chevron-double-right svgInButtons"
+                                                     viewBox="0 0 16 16">
+                                                    <path fill-rule="evenodd"
+                                                          d="M3.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L9.293 8 3.646 2.354a.5.5 0 0 1 0-.708"/>
+                                                    <path fill-rule="evenodd"
+                                                          d="M7.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L13.293 8 7.646 2.354a.5.5 0 0 1 0-.708"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed"
+                                    type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#panelsStayOpen-collapseThree"
+                                    aria-expanded="false"
+                                    aria-controls="panelsStayOpen-collapseThree">
+                                <b>Extract</b>
+                            </button>
+                        </h2>
+                        <div id="panelsStayOpen-collapseThree"
+                             class="accordion-collapse collapse">
+                            <div class="accordion-body">
+
+                                <div class="container"
+                                     style="margin-top: 20px; max-height: 200px; padding-left: 10px; padding-right: 10px">
+                                    <div class="container"
+                                         style="margin-top: 10px; border: 1px solid #cccccc; border-radius: 6px">
+                                        <div class="div_header" style="color: #000000;
+                        background-color: #ffffff;
+                        font-weight: bold;
+                        border-radius: 0.375rem 0.375rem 0 0;">
+                                            <button type="button"
+                                                    class="btn-clipboard btn"
+                                                    onclick="copyTextToClipboard()">
+                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                     width="16" height="16"
+                                                     fill="currentColor"
+                                                     class="bi bi-clipboard svgInButtons"
+                                                     viewBox="0 0 16 16">
+                                                    <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1z"/>
+                                                    <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0z"/>
+                                                </svg>
+                                                <b>Best Term</b>
+                                            </button>
+                                        </div>
+                                        <div class="container" id="term"
+                                             style="padding-top: 10px; padding-bottom: 10px; padding-left: 10px">
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="container"
+                                     style="margin-top: 20px; max-height: 200px; padding-left: 0; padding-right: 0">
+                                    <div class="container"
+                                         style="padding-top: 10px; padding-bottom: 10px; padding-left: 10px">
+                                        <div class="btn-group" role="group"
+                                             aria-label="Button Control Group"
+                                             style="height: 100%; width: 100%">
+                                            <button type="button"
+                                                    class="btn btn-success"
+                                                    onclick="extractBestTerm()">
+                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                     width="16" height="16"
+                                                     fill="currentColor"
+                                                     class="bi bi-diagram-3 svgInButtons"
+                                                     viewBox="0 0 16 16">
+                                                    <path fill-rule="evenodd"
+                                                          d="M6 3.5A1.5 1.5 0 0 1 7.5 2h1A1.5 1.5 0 0 1 10 3.5v1A1.5 1.5 0 0 1 8.5 6v1H14a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-1 0V8h-5v.5a.5.5 0 0 1-1 0V8h-5v.5a.5.5 0 0 1-1 0v-1A.5.5 0 0 1 2 7h5.5V6A1.5 1.5 0 0 1 6 4.5zM8.5 5a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5zM0 11.5A1.5 1.5 0 0 1 1.5 10h1A1.5 1.5 0 0 1 4 11.5v1A1.5 1.5 0 0 1 2.5 14h-1A1.5 1.5 0 0 1 0 12.5zm1.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm4.5.5A1.5 1.5 0 0 1 7.5 10h1a1.5 1.5 0 0 1 1.5 1.5v1A1.5 1.5 0 0 1 8.5 14h-1A1.5 1.5 0 0 1 6 12.5zm1.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm4.5.5a1.5 1.5 0 0 1 1.5-1.5h1a1.5 1.5 0 0 1 1.5 1.5v1a1.5 1.5 0 0 1-1.5 1.5h-1a1.5 1.5 0 0 1-1.5-1.5zm1.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5z"/>
+                                                </svg>
+                                                Extract
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed"
+                                    type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#panelsStayOpen-collapseFour"
+                                    aria-expanded="false"
+                                    aria-controls="panelsStayOpen-collapseFour">
+                                <b>Export</b>
+                            </button>
+                        </h2>
+                        <div id="panelsStayOpen-collapseFour"
+                             class="accordion-collapse collapse">
+                            <div class="accordion-body">
+
+                                <div class="container text-center">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="form-check">
+                                                <input class="form-check-input"
+                                                       type="radio"
+                                                       name="export"
+                                                       id="export_pdf" checked>
+                                                <label class="form-check-label"
+                                                       for="export_pdf">
+                                                    <b>PDF</b>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-check">
+                                                <input class="form-check-input"
+                                                       type="radio"
+                                                       name="export"
+                                                       id="export_svg">
+                                                <label class="form-check-label"
+                                                       for="export_svg">
+                                                    <b>SVG</b>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-check">
+                                                <input class="form-check-input"
+                                                       type="radio"
+                                                       name="export"
+                                                       id="export_png">
+                                                <label class="form-check-label"
+                                                       for="export_png">
+                                                    <b>PNG</b>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="container"
+                                     style="margin-top: 20px; max-height: 200px; padding-left: 0; padding-right: 0">
+                                    <div class="container"
+                                         style="padding-top: 10px; padding-bottom: 10px; padding-left: 10px">
+                                        <div class="btn-group" role="group"
+                                             aria-label="Button Control Group"
+                                             style="height: 100%; width: 100%">
+                                            <button type="button"
+                                                    class="btn btn-success"
+                                                    onclick="exportEGraph()">
+                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                     width="16" height="16"
+                                                     fill="currentColor"
+                                                     class="bi bi-card-image svgInButtons"
+                                                     viewBox="0 0 16 16">
+                                                    <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>
+                                                    <path d="M1.5 2A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2zm13 1a.5.5 0 0 1 .5.5v6l-3.775-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12v.54L1 12.5v-9a.5.5 0 0 1 .5-.5z"/>
+                                                </svg>
+                                                Export
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed"
+                                    type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#panelsStayOpen-collapseFive"
+                                    aria-expanded="false"
+                                    aria-controls="panelsStayOpen-collapseFive">
+                                <b>Session</b>
+                            </button>
+                        </h2>
+                        <div id="panelsStayOpen-collapseFive"
+                             class="accordion-collapse collapse">
+                            <div class="accordion-body">
+
+                                <div class="container text-center">
+                                    <div class="row row-cols-2">
+                                        <div class="col">
+                                            <button type="button"
+                                                    class="btn btn-success"
+                                                    onclick="uploadSession()"
+                                                    style="width: 100%;">
+                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                     width="16" height="16"
+                                                     fill="currentColor"
+                                                     class="bi bi-box-arrow-in-up svgInButtons"
+                                                     viewBox="0 0 16 16">
+                                                    <path fill-rule="evenodd"
+                                                          d="M3.5 10a.5.5 0 0 1-.5-.5v-8a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 0 0 1h2A1.5 1.5 0 0 0 14 9.5v-8A1.5 1.5 0 0 0 12.5 0h-9A1.5 1.5 0 0 0 2 1.5v8A1.5 1.5 0 0 0 3.5 11h2a.5.5 0 0 0 0-1z"/>
+                                                    <path fill-rule="evenodd"
+                                                          d="M7.646 4.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V14.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708z"/>
+                                                </svg>
+                                                Upload
+                                            </button>
+                                        </div>
+                                        <div class="col">
+                                            <button type="button"
+                                                    class="btn btn-success"
+                                                    onclick="downloadSession()"
+                                                    style="width: 100%;">
+                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                     width="16" height="16"
+                                                     fill="currentColor"
+                                                     class="bi bi-box-arrow-in-down svgInButtons"
+                                                     viewBox="0 0 16 16">
+                                                    <path fill-rule="evenodd"
+                                                          d="M3.5 6a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 1 0-1h2A1.5 1.5 0 0 1 14 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-8A1.5 1.5 0 0 1 3.5 5h2a.5.5 0 0 1 0 1z"/>
+                                                    <path fill-rule="evenodd"
+                                                          d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708z"/>
+                                                </svg>
+                                                Download
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="container card" id="status_div"
+                     style="margin-top: 20px; max-height: 300px; padding-left: 0; padding-right: 0">
+                    <div class="div_header" style="padding-left: 10px;color: #ffffff;
+                        background-color: #1a1d20;
+                        font-weight: bold;
+                        border-radius: 0.375rem 0.375rem 0 0;">Status
+                    </div>
+                    <div class="container" id="status_msg"
+                         style="padding: 10px 0;overflow: scroll">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- MAIN -->
+<!--##########################################################################################################################-->
+</body>
+</html>

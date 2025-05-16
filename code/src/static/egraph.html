@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- (DISCLAIMER) -->
+    <!-- This project, particularly the UI, uses components and icons from
+    Bootstrap v5.3.3 (LINK: https://getbootstrap.com/) -->
+    <meta charset="UTF-8">
+    <title>E-Graphs</title>
+    <link rel="icon" type="image/x-icon" href="logo.png">
+    <link rel="stylesheet" href="bootstrap-5.3.3-dist/css/bootstrap.min.css">
+    <script src="index.js"></script>
+    <script src="bootstrap-5.3.3-dist/js/bootstrap.min.js"></script>
+    <script src="d3.v7.js"></script>
+    <script src="graphviz.umd.js"></script>
+    <script src="d3-graphviz.js"></script>
+    <noscript>
+        <div class="alert alert-danger" role="alert">
+            <b>ATTENTION!</b> This application requires JavaScript to run
+            properly. Please enable it. If you have any extensions that block
+            JavaScript enabled, please disable them for this tab.
+        </div>
+    </noscript>
+    <style>
+        svg {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+    <script>
+        function load_egraph() {
+            contactServer("/loadegraph", null, "GET").then(
+        function (value) {
+            if (value['response'] === "False") {
+                // addMessageToStatusBar("[INFO]", value['msg']);
+            } else {
+                renderEGraph(value['payload2'])
+                // addMessageToStatusBar("[INFO]", value['msg']);
+                // addMessageToStatusBar("[INFO]", value['payload1'])
+            }
+        }, function () {
+            // addMessageToStatusBar("[ERROR]", "Failed to contact server.")
+        });
+        }
+    </script>
+</head>
+<body onload="load_egraph()">
+<!--##########################################################################################################################-->
+<!-- HEADER -->
+<div class="container" style="max-width: 100%">
+    <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
+        <div class="col-md-3 mb-2 mb-md-0">
+            <img src="logo.png" width="56" height="56" alt="E-Graphs logo">
+        </div>
+        <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
+            <li><a href="documentation/" class="nav-link px-2">Docs</a></li>
+            <li><a href="about.html" rel="noopener noreferrer"
+                   class="nav-link px-2">About</a></li>
+        </ul>
+        <div class="col-md-3 text-end">
+        </div>
+    </header>
+</div>
+<div class="b-example-divider"></div>
+<!-- HEADER -->
+<!--##########################################################################################################################-->
+
+<!--##########################################################################################################################-->
+<!-- MAIN -->
+<div style="border-radius: 4px; margin: 30px;" class="card">
+    <div id="graph" style="text-align: center;height: 100%;"></div>
+</div>
+<!-- MAIN -->
+<!--##########################################################################################################################-->
+</body>
+</html>

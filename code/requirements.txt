@@ -1,0 +1,4 @@
+scipy==1.11.3
+graphviz==0.20.3
+fastapi==0.115.5
+starlette>=0.40.0
